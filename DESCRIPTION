@@ -4,6 +4,6 @@ Version: 0.0.0.9000
 Authors@R: person("Hiren", "Joshi", email = "ggsequence@glycocode.com", role = c("aut", "cre"))
 Description: Aligns protein sequences and produces plots that can be further annotated with extra data such as PTMs
 Depends: R (>= 3.2.2),
-		ggplot( >= 1)
+		ggplot2(>= 1.0.0)
 License: MIT
 LazyData: true
