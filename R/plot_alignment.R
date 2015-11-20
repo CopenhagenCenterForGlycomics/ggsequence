@@ -10,13 +10,14 @@ plot_alignment <- function(alignment) {
 	aas.frame$seqname = rownames(aas.frame)
 	aas.melted = reshape2::melt( merge(aas.frame,seqdata,by='seqname'), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
 	aas.melted$pos = as.numeric(aas.melted$pos)
-	aas.melted = rbind(aas.melted,data.frame(seqname="conservation",seq.id="conservation",start=-1,end=-1,pos=-1,aa='X'))
-	aas.melted$seqname = factor(aas.melted$seqname,levels=unique( c(unique(aas.melted$seqname),"conservation")))
+	# aas.melted = rbind(aas.melted,data.frame(seqname="conservation",seq.id="conservation",start=-1,end=-1,pos=-1,aa='X'))
+	aas.melted$seqname = factor(aas.melted$seqname,levels=unique( unique(aas.melted$seqname)))
 	out.plot = ggplot(aas.melted)+geom_text(aes(x=pos,y=seqname,label=aa),size=3)+coord_fixed(2)+scale_x_discrete(limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=50))+theme_minimal()
 	out.plot + scale_y_discrete(labels=function(lab) { unlist(Map(function(lbls) { paste(lbls[1],lbls[2],sep='@')} ,strsplit(lab,'#'))) })
 }
 
 get_plot = function() {
-	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+stat_conservation(alone=T)
+	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)
+	message("Here")
 	plot
 }
