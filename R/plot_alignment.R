@@ -17,7 +17,7 @@ plot_alignment <- function(alignment) {
 }
 
 get_plot = function() {
-	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)
+	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)+stat_aligned_site(aes(x=..site..),annotations=data.frame(seqname="2#1#6",site=3,end=4,class='foo'),columns=c('site'))
 	message("Here")
 	plot
 }

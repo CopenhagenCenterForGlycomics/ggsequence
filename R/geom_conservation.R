@@ -89,7 +89,7 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
 )
 
 
-#' Wrap the venn diagram into a geom
+#' Stat to calculate a conservation value using the clustalw scoring
 #' @export
 stat_conservation <- function(mapping = NULL, data = NULL, geom = "barcode",
                           position = "identity",
