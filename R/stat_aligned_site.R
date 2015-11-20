@@ -52,7 +52,6 @@ compute_sites <- function(alignment.data,sites,site.columns) {
       rescale_site(alignment[as.numeric(row['y'])],as.numeric(row[col])+1)
     })    
   }
-  browser()
   return (merged[,c(1,4:ncol(merged))])
 }
 
