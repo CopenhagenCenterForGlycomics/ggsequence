@@ -10,14 +10,14 @@ alignment_default_aes <- function(mapping) {
 
 #' Stat to re-align columns in a data frame using the alignment information
 #' @export
-stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "barcode",
+stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
                           position = "identity",
                           show.legend = NA, inherit.aes = TRUE,na.rm=T,annotations=NULL,columns=c(),...) {
   ggplot2::layer(
     data = data,
     mapping = alignment_default_aes(mapping),
     stat = StatAlignedSite,
-    geom = "point",
+    geom = geom,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,

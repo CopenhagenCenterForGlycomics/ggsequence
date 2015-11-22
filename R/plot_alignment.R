@@ -17,7 +17,7 @@ plot_alignment <- function(alignment) {
 }
 
 get_plot = function() {
-	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)+stat_aligned_site(aes(x=..site..),color='red',shape=1,size=10,annotations=data.frame(seqname="2#1#6",site=4,end=4,class='foo'),columns=c('site'))
-	message("Here")
+	site_data = data.frame(seqname=c('2#1#6','1#1#8'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
+	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)+stat_aligned_site(aes(x=..site..),geom=GeomSugar,color='red',shape=1,size=10,annotations=site_data,columns=c('site'))
 	plot
 }
