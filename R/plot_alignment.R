@@ -18,6 +18,6 @@ plot_alignment <- function(alignment) {
 
 get_plot = function() {
 	site_data = data.frame(seqname=c('2#1#6','1#1#8'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
-	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)+stat_aligned_site(aes(x=..site..),geom=GeomSugar,color='red',shape=1,size=10,annotations=site_data,columns=c('site'))
+	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)+geom_sugar(aes(x=..site..),annotations=site_data,columns=c('site')) #stat_aligned_site(aes(x=..site..),geom=GeomSugar,annotations=site_data,columns=c('site'))
 	plot
 }

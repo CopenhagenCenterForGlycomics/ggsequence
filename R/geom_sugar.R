@@ -11,22 +11,18 @@ alignment_default_aes <- function(mapping) {
 #' @export
 geom_sugar <- function(mapping = NULL, data = NULL, stat = "alignedSite",
                           position = "identity",
-                          show.legend = NA, inherit.aes = TRUE,na.rm=T,colour=NA,shape=NA,size=NA,...) {
+                          show.legend = NA, inherit.aes = TRUE,na.rm=T,...) {
   ggplot2::layer(
     data = data,
     mapping = alignment_default_aes(mapping),
-    stat = StatAlignedSite,
+    stat = stat,
     geom = GeomSugar,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
       na.rm=na.rm,
-      colour=colour,
-      shape=shape,
-      size=size,
       ...
-
     )
   )
 }
@@ -78,7 +74,8 @@ draw_galb13galnac = function(x,y) {
 
 #' @export
 GeomSugar <- ggplot2::ggproto("GeomSugar", ggplot2::Geom,
-                        draw_panel = function(data, panel_scales, coord,colour,shape,size) {
+                        required_aes='x',
+                        draw_panel = function(data, panel_scales, coord) {
                           coords <- coord$transform(data, panel_scales)
                           draw_sugar_vec = Vectorize(draw_sugar)
                           results = draw_sugar_vec(coords$x,coords$y,coords$class)
