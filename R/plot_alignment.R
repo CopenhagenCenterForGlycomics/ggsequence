@@ -17,7 +17,12 @@ plot_alignment <- function(alignment) {
 }
 
 get_plot = function() {
-	site_data = data.frame(seqname=c('2#1#6','1#1#8'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
-	plot = plot_alignment(do_alignment(c('MNTTTMMM','NNSMMM')))+geom_barcode(overlay=F)+geom_sugar(aes(x=..site..),annotations=site_data,columns=c('site')) #stat_aligned_site(aes(x=..site..),geom=GeomSugar,annotations=site_data,columns=c('site'))
+	site_data = data.frame(seqname=c('2#1#6','1#1#13'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
+	plot = 	plot_alignment(do_alignment(c('MNTTTMMMNPPPP','NNSMMM')))+
+			geom_barcode(overlay=F)+
+			stat_gapped_sequence(aes(x=..seqstart..),geom="segment",size=2,colour="black")+
+			geom_sugar(aes(x=..site..),annotations=site_data,columns=c('site'))
+	# browser()
+	# ggplot2::ggplot_build(plot)
 	plot
 }
