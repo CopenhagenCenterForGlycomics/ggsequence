@@ -34,7 +34,7 @@ compute_sites <- function(alignment.data,sites,site.columns) {
   alignment =  apply( t(sapply(1:max(alignment.data$y), function(y) { alignment.data[alignment.data$y == y,'aa']})), 1, function(row) paste(row,collapse='') )
   merged = merge(setNames(alignment.data[,c('start','end','seqname','y')], c('aln.start','aln.end','seqname','y')),sites,by='seqname')
   wanted.rows = Reduce(function(old,col) { old & ( ((merged[[col]] - merged$aln.start) * (merged$aln.end - merged[[col]])) >= 0 ) },site.columns,rep(TRUE,nrow(merged)))
-  merged = merged[which(wanted.rows),]
+  merged = unique(merged[which(wanted.rows),])
   # merged$seqid.draw = sapply(merged$seqid,function(id) { paste(id,'.')})
   for (col in site.columns) {
     merged[[col]] = merged[[col]] - merged$aln.start

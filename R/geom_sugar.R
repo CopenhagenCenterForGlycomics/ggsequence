@@ -69,7 +69,7 @@ GeomSugar <- ggplot2::ggproto("GeomSugar", ggplot2::Geom,
                         required_aes='x',
                         draw_panel = function(data, panel_scales, coord,offset=2) {
                           coords <- coord$transform(data, panel_scales)
-                          draw_sugar_vec = Vectorize(draw_sugar)
+                          draw_sugar_vec = Vectorize(draw_sugar,SIMPLIFY=F)
                           results = draw_sugar_vec(coords$x,coords$y,coords$class,offset)
                           do.call(grid::gList,results)
                         }
