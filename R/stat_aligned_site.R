@@ -22,7 +22,7 @@ stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
 
 #' @export
 StatAlignedSite <- ggplot2::ggproto("StatAlignedSite", ggplot2::Stat,
-                        default_aes = ggplot2::aes(),
+                        default_aes = ggplot2::aes(y=..y..,yend=..y..),
                         compute_panel = function(data,scales,annotations=NULL,columns=c()) {
                           data$pos = as.numeric(data$pos)
                           return(unique(compute_sites(data,annotations,columns)))
@@ -33,7 +33,7 @@ StatAlignedSite <- ggplot2::ggproto("StatAlignedSite", ggplot2::Stat,
 compute_sites <- function(alignment.data,sites,site.columns) {
   alignment =  apply( t(sapply(1:max(alignment.data$y), function(y) { alignment.data[alignment.data$y == y,'aa']})), 1, function(row) paste(row,collapse='') )
   merged = merge(setNames(alignment.data[,c('start','end','seqname','y')], c('aln.start','aln.end','seqname','y')),sites,by='seqname')
-  wanted.rows = Reduce(function(old,col) { old & ( ((merged[[col]] - merged$aln.start) * (merged$aln.end - merged[[col]])) > 0 ) },site.columns,rep(TRUE,nrow(merged)))
+  wanted.rows = Reduce(function(old,col) { old & ( ((merged[[col]] - merged$aln.start) * (merged$aln.end - merged[[col]])) >= 0 ) },site.columns,rep(TRUE,nrow(merged)))
   merged = merged[which(wanted.rows),]
   # merged$seqid.draw = sapply(merged$seqid,function(id) { paste(id,'.')})
   for (col in site.columns) {
