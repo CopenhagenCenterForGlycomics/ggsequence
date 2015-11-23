@@ -40,7 +40,7 @@ get_conservation <- function(data) {
 
 
 conservation_default_aes <- function(mapping) {
-  default_mapping = ggplot2::aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa,alpha=..conservation.. )
+  default_mapping = ggplot2::aes(alpha=..conservation.. )
   if (is.null(mapping)) {
     mapping = default_mapping
   }
@@ -75,6 +75,24 @@ geom_barcode <- function(mapping = NULL, data = NULL, stat = "conservation",
   )
 }
 
+draw_geom_barcode = function(data,panel_scales,coord) {
+  coords <- coord$transform(data, panel_scales)
+  grid::rectGrob(
+    coords$xmin, coords$ymax,
+    width = coords$xmax - coords$xmin,
+    height = grid::unit(5,"mm"),
+    default.units = "native",
+    just = c("left", "top"),
+    gp = grid::gpar(
+      col = alpha(coords$colour, coords$alpha),
+      fill = alpha(coords$fill, coords$alpha),
+      lwd = coords$size * .pt,
+      lty = coords$linetype,
+      lineend = "butt"
+    )
+  )
+}
+
 #' @export
 GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                         draw_panel = function(self,data, panel_scales, coord,overlay=F) {
@@ -84,7 +102,8 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             panel_scales$y.range = c( panel_scales$y.range[1], 1)
                           }
                           data = unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')])
-                          return (self$super$draw_panel(unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')]),panel_scales,coord))
+                          barcode = draw_geom_barcode(unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')]),panel_scales,coord)
+                          ggplot2::GeomCustomAnn$draw_panel(NULL, panel_scales, coord, barcode, data$xmin, data$xmax,0, 1)
                         }
 )
 
@@ -96,7 +115,7 @@ stat_conservation <- function(mapping = NULL, data = NULL, geom = "barcode",
                           show.legend = NA, inherit.aes = TRUE,na.rm=T,alone=T,...) {
   ggplot2::layer(
     data = data,
-    mapping = conservation_default_aes(mapping),
+    mapping = mapping,
     stat = StatConservation,
     geom = "barcode",
     position = position,

@@ -1,13 +1,3 @@
-alignment_default_aes <- function(mapping) {
-  default_mapping = ggplot2::aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa )
-  if (is.null(mapping)) {
-    mapping = default_mapping
-  }
-  default_mapping = default_mapping[ ! names(default_mapping) %in% names(mapping), ]
-  mapping = do.call( ggplot2::aes, c( mapping, default_mapping ) )
-}
-
-
 #' Stat to re-align columns in a data frame using the alignment information
 #' @export
 stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
@@ -15,7 +5,7 @@ stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
                           show.legend = NA, inherit.aes = TRUE,na.rm=T,annotations=NULL,columns=c(),...) {
   ggplot2::layer(
     data = data,
-    mapping = alignment_default_aes(mapping),
+    mapping = mapping,
     stat = StatAlignedSite,
     geom = geom,
     position = position,

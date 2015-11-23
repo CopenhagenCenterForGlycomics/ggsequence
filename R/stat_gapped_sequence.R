@@ -1,13 +1,3 @@
-alignment_default_aes <- function(mapping) {
-  default_mapping = ggplot2::aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa )
-  if (is.null(mapping)) {
-    mapping = default_mapping
-  }
-  default_mapping = default_mapping[ ! names(default_mapping) %in% names(mapping), ]
-  mapping = do.call( ggplot2::aes, c( mapping, default_mapping ) )
-}
-
-
 #' Stat to re-align columns in a data frame using the alignment information
 #' @export
 stat_gapped_sequence <- function(mapping = NULL, data = NULL, geom = "rect",
@@ -15,7 +5,7 @@ stat_gapped_sequence <- function(mapping = NULL, data = NULL, geom = "rect",
                           show.legend = NA, inherit.aes = TRUE,na.rm=T,...) {
   ggplot2::layer(
     data = data,
-    mapping = alignment_default_aes(mapping),
+    mapping = mapping,
     stat = StatGappedSequence,
     geom = geom,
     position = position,
@@ -43,13 +33,12 @@ StatGappedSequence <- ggplot2::ggproto("StatGappedSequence", ggplot2::Stat,
                             if (substr(aln,nchar(aln),nchar(aln)) != "-") {
                               transitions = c(transitions,nchar(aln))
                             }
-                            groups = matrix(transitions,ncol=2)
+                            groups = matrix(transitions,ncol=2,byrow=T)
                             groups = as.data.frame(groups)
                             names(groups) = c('seqstart','seqend')
                             groups$y = yval
                             groups                         
                           })
-                          browser()
                           return(trans)
                         }
 )

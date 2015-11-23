@@ -12,16 +12,19 @@ plot_alignment <- function(alignment) {
 	aas.melted$pos = as.numeric(aas.melted$pos)
 	# aas.melted = rbind(aas.melted,data.frame(seqname="conservation",seq.id="conservation",start=-1,end=-1,pos=-1,aa='X'))
 	aas.melted$seqname = factor(aas.melted$seqname,levels=unique( unique(aas.melted$seqname)))
-	out.plot = ggplot(aas.melted)+geom_text(aes(x=pos,y=seqname,label=aa),size=3)+coord_fixed(2)+scale_x_discrete(limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=50))+theme_minimal()
+	out.plot = ggplot(aas.melted,aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+coord_fixed(2)+scale_x_discrete(limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=50))+theme_minimal()
 	out.plot + scale_y_discrete(labels=function(lab) { unlist(Map(function(lbls) { paste(lbls[1],lbls[2],sep='@')} ,strsplit(lab,'#'))) })
 }
 
 get_plot = function() {
-	site_data = data.frame(seqname=c('2#1#6','1#1#13'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
-	plot = 	plot_alignment(do_alignment(c('MNTTTMMMNPPPP','NNSMMM')))+
+	site_data = data.frame(seqname=c('2','1'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
+	plot = 	plot_alignment(do_alignment(c('MNTTTMMMNPPPP','NNSMMMPP')))+
 			geom_barcode(overlay=F)+
 			stat_gapped_sequence(aes(x=..seqstart..),geom="segment",size=2,colour="black")+
-			geom_sugar(aes(x=..site..),annotations=site_data,columns=c('site'))
+			geom_sugar(aes(x=..site..),stat="alignedSite",annotations=site_data,columns=c('site'),offset=0)
+
+
+#			geom_text(aes(x=pos,y=seqname,label=aa),size=3)
 	# browser()
 	# ggplot2::ggplot_build(plot)
 	plot
