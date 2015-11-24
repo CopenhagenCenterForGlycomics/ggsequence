@@ -11,9 +11,31 @@ plot_alignment <- function(alignment) {
 	aas.melted = reshape2::melt( merge(aas.frame,seqdata,by='seqname'), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
 	aas.melted$pos = as.numeric(aas.melted$pos)
 	aas.melted$seqname = factor(aas.melted$seqname,levels=rev(unique(seqnames)))
-	out.plot = ggplot(aas.melted,aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+scale_x_discrete(limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=50))+theme_minimal()+theme(panel.grid=ggplot2::element_blank())
-	out.plot + scale_y_discrete()
+	out.plot = 	ggplot(aas.melted,aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+
+				scale_x_discrete(name="Amino acid position",limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=50))+
+				theme_minimal()+
+				theme(panel.grid=ggplot2::element_blank())
+	out.plot = out.plot + scale_y_discrete(name="Sequence")
+	class(out.plot) = c('aligned.plot',class(out.plot))
+	out.plot
 }
+
+ggplot.MsaAAMultipleAlignment = function(alignment) {
+	plot_alignment(alignment)
+}
+
+ggplotGrob.aligned.plot = function(x) {
+	g = ggplot2::ggplotGrob(x)
+	g$layout$clip[g$layout$name == "panel"] = "off"
+	g
+}
+
+print.aligned.plot = function(x) {
+  grid::grid.newpage()
+  g = ggplotGrob(x)
+  grid::grid.draw(g)
+}
+
 
 get_alignment = function(df) {
 	df$identifier = factor(df$identifier,levels=c('HSV-1','HSV-2','VZV','HCMV','EBV'))
@@ -45,11 +67,9 @@ plot_ieva = function() {
 	tms = annotations[annotations$annotation=='TM',c('seqname','annotation','start','end')]
 	ambiguous = unique(annotations[annotations$annotation=='AMBIGUOUS',c('seqname','annotation','start','end','number_of_ambiguous')])
 
-	plots = lapply(proteins,function(prot) {
+	plots = lapply(head(proteins,2),function(prot) {
 		plot_alignment(get_alignment(unique(annotations[annotations$protein == prot,c('protein','uniprot_id','identifier')])))+
-	  scale_alpha(labels=c(' ','.',':','*'),breaks=c(0,1/3,2/3,1),range=c(0,1))+
 		geom_barcode(overlay=F)+
-	    # scale_x_discrete(limit=1:1050,breaks=seq(from=0,to=1050,by=50))+
 		geom_segment(aes(x=..seqstart..,xend=..seqend..),stat="gappedSequence",size=2,colour="black")+
 		geom_sugar(aes(x=..start..),stat="alignedSite",annotations=sites,columns=c('start'),offset=0)+
 		geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=sigpeps,columns=c('start','end'))+
@@ -57,7 +77,7 @@ plot_ieva = function() {
 		geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="yellow",size=4,alpha=0.5,annotations=ambiguous,columns=c('start','end'))+
 		geom_text(aes(x=..start..,label=..number_of_ambiguous..),stat="alignedSite",colour="black",nudge_y=-0.25,size=5,alpha=1,annotations=ambiguous,columns=c('start','end'))
 	})
-	do.call(gridExtra::arrangeGrob,c( plots,ncol=1))
+	do.call(gridExtra::arrangeGrob,c( grobs=lapply(plots,ggplotGrob.aligned.plot),ncol=1,clip=F))
 }
 
 get_plot = function() {
@@ -66,14 +86,11 @@ get_plot = function() {
 
 	sigpep_data = data.frame(seqname=c('2','1'),start=c(1,1),end=c(3,4))
 
-	plot = 	plot_alignment(do_alignment(c('MNTTTMMMNPPPP','NNSMMMPP')))+
-			geom_barcode(overlay=F)+
+	plot = 	ggplot(do_alignment(c('MNTTTMMMNPPPP','NNSMMMPP')))+
+			geom_barcode()+
 			geom_segment(aes(x=..seqstart..,xend=..seqend..),stat="gappedSequence",size=2,colour="black")+
 			geom_sugar(aes(x=..site..),stat="alignedSite",annotations=site_data,columns=c('site'),offset=0)+
 			geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=sigpep_data,columns=c('start','end'))
-
-
-#			geom_text(aes(x=pos,y=seqname,label=aa),size=3)
 
 	plot
 }
