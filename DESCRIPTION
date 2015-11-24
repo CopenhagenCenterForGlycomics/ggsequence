@@ -1,9 +1,15 @@
 Package: ggsequence
 Title: ggplot geoms and stats for displaying protein sequences
-Version: 0.0.0.9000
+Version: 0.1
 Authors@R: person("Hiren", "Joshi", email = "ggsequence@glycocode.com", role = c("aut", "cre"))
 Description: Aligns protein sequences and produces plots that can be further annotated with extra data such as PTMs
 Depends: R (>= 3.2.2),
-		ggplot2(>= 1.0.0)
+		ggplot2(>= 1.0.0),
+		BiocGenerics,
+		Biostrings,
+		reshape2,
+		msa,
+		grid,
+		plyr
 License: MIT
 LazyData: true
