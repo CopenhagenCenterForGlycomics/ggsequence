@@ -106,7 +106,7 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             return(self$super$draw_panel(data, panel_scales, coord))
                           }
                           barcode = draw_geom_barcode(unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')]),panel_scales,coord)
-                          return (ggplot2::GeomCustomAnn$draw_panel(NULL, panel_scales, coord, barcode, data$xmin, data$xmax,0, 1))
+                          return (ggplot2::GeomCustomAnn$draw_panel(NULL, panel_scales, coord, barcode, panel_scales$x.range[1], panel_scales$x.range[2],0, 1))
                         }
 )
 

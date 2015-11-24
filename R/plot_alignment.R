@@ -10,10 +10,7 @@ plot_alignment <- function(alignment) {
 	aas.frame$seqname = rownames(aas.frame)
 	aas.melted = reshape2::melt( merge(aas.frame,seqdata,by='seqname'), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
 	aas.melted$pos = as.numeric(aas.melted$pos)
-	aas.melted$seqname = gdata::reorder.factor(aas.melted$seqname,new.order=rev(unique(seqnames)))
-	# aas.melted = rbind(aas.melted,data.frame(seqname="conservation",seq.id="conservation",start=-1,end=-1,pos=-1,aa='X'))
-	# +coord_fixed(2)+
-	#aas.melted$seqname = factor(aas.melted$seqname,levels=unique( unique(aas.melted$seqname)))
+	aas.melted$seqname = factor(aas.melted$seqname,levels=rev(unique(seqnames)))
 	out.plot = ggplot(aas.melted,aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+scale_x_discrete(limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=50))+theme_minimal()+theme(panel.grid=ggplot2::element_blank())
 	out.plot + scale_y_discrete()
 }
@@ -23,7 +20,8 @@ get_alignment = function(df) {
 	df = df[order(df$identifier),]
 	seqs = Rgator::getUniprotSequences(df$uniprot_id)
 	seqs$uniprot = toupper(seqs$uniprot)
-	seqs = merge(df,seqs,by.x='uniprot_id',by.y='uniprot')$sequence
+	seqs = merge(df,seqs,by.x='uniprot_id',by.y='uniprot')
+	seqs = seqs[order(seqs$identifier),]$sequence
 	seqnames = paste(df$protein,df$identifier,sep='.')
 	seqs = lapply( 1:length(seqs), function(seq_id) { 
 		views = Biostrings::Views(seqs[seq_id],start=1,end=nchar(seqs[seq_id]))
@@ -49,7 +47,9 @@ plot_ieva = function() {
 
 	plots = lapply(proteins,function(prot) {
 		plot_alignment(get_alignment(unique(annotations[annotations$protein == prot,c('protein','uniprot_id','identifier')])))+
+	  scale_alpha(labels=c(' ','.',':','*'),breaks=c(0,1/3,2/3,1),range=c(0,1))+
 		geom_barcode(overlay=F)+
+	    # scale_x_discrete(limit=1:1050,breaks=seq(from=0,to=1050,by=50))+
 		geom_segment(aes(x=..seqstart..,xend=..seqend..),stat="gappedSequence",size=2,colour="black")+
 		geom_sugar(aes(x=..start..),stat="alignedSite",annotations=sites,columns=c('start'),offset=0)+
 		geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=sigpeps,columns=c('start','end'))+
