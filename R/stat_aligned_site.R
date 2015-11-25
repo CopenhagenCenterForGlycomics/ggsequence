@@ -45,8 +45,6 @@ compute_sites <- function(alignment.data,sites,site.columns) {
   return (merged[,c(1,4:ncol(merged))])
 }
 
-# Write some unit tests for this
-
 rescale_site <- function(seq,site) {
   seq_parts = Map( function(part) {
     if (grepl('[A-Za-z]',part)) {
