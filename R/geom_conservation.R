@@ -74,6 +74,10 @@ geom_barcode <- function(mapping = NULL, data = NULL, stat = "conservation",
       ...
     )
   )
+  # http://stackoverflow.com/questions/8905101/how-can-i-use-a-graphic-imported-with-grimport-as-axis-tick-labels-in-ggplot2-u
+  # It doesn't look like we can override axis.text.x (or anything for that matter)
+  # with a custom grob, so there's no easy way to replace the axis.
+
   if (overlay == FALSE) {
     layer = list(layer,theme(plot.margin=unit(x=c(1.5*height*.pt,0,0,0),units="mm")), scale_alpha(name="Conservation",labels=c(' ','.',':','*'),breaks=c(0,1/3,2/3,1),range=c(0,1)) )
   }
