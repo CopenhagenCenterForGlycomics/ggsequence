@@ -23,9 +23,27 @@ draw_sugar = function(x,y,sugar,offset) {
   if (sugar == "galnac") {
     return (draw_galnac(x,y,offset))
   }
+  if (sugar == "man") {
+    return (draw_man(x,y,offset))
+  }
   if (sugar == "gal(b1-3)galnac") {
     return (draw_galb13galnac(x,y,offset))
   }
+}
+
+draw_man = function(x,y,offset=0) {
+  grid::circleGrob(
+    x, grid::unit(y,"native") + grid::unit(offset * .pt,"mm"),
+    r = grid::unit(0.5 * .pt ,"mm"),
+    default.units = "native",
+    gp = grid::gpar(
+      col = ggplot2::alpha("black", 1),
+      fill = ggplot2::alpha("green", 1),
+      lwd = 0.5 * .pt,
+      lty = 1,
+      lineend = "butt"
+    )
+  )
 }
 
 draw_galnac = function(x,y,offset=0) {

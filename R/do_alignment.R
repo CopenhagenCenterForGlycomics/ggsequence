@@ -1,10 +1,13 @@
 do_alignment = function(sequences) {
+	if (is.null(names(sequences))) {
+		names(sequences) = as.character(1:length(sequences))
+	}
 	seqs = lapply( 1:length(sequences), function(seq_id) { 
 		views = Biostrings::Views(sequences[seq_id],start=1,end=nchar(sequences[seq_id]))
-		names(views) = seq_id #paste(seq_id,1,sapply(sequences[seq_id],nchar),sep='#')
+		names(views) = names(sequences)[seq_id]
 		views
 	})
-	names(seqs) = as.character(1:length(sequences))
+	names(seqs) = names(sequences)
 	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { as(view,'AAStringSet')}, seqs)) )
 	attributes(aln)$sequences = seqs
 	aln

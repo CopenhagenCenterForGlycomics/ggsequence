@@ -49,15 +49,14 @@ print.aligned.plot = function(x) {
 
 get_plot = function() {
 
-	site_data = data.frame(seqname=c('2','1'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
+	site_data = data.frame(seq.ids=c('bar','foo'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
 
-	sigpep_data = data.frame(seqname=c('2','1'),start=c(1,1),end=c(3,4))
+	sigpep_data = data.frame(seq.ids=c('bar','foo'),start=c(1,1),end=c(3,4))
 
-	plot = 	ggplot(do_alignment(c('MNTTTMMMNPPPP','NNSMMMPP')))+
+	plot = 	ggplot(do_alignment(c(foo='MNTTTMMMNPPPP',bar='NNSMMMPP')))+
 			geom_barcode(overlay=F)+
 			geom_segment(aes(x=..seqstart..,xend=..seqend..),stat="gappedSequence",size=2,colour="black")+
-			geom_sugar(aes(x=..site..),stat="alignedSite",annotations=site_data,columns=c('site'),offset=0)+
-			geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=sigpep_data,columns=c('start','end'))
-
+			geom_sugar(aes(x=..site..),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),offset=0)+
+			geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=sigpep_data,id.column='seq.ids',columns=c('start','end'))
 	plot
 }
