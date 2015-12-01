@@ -86,12 +86,12 @@ geom_barcode <- function(mapping = NULL, data = NULL, stat = "conservation",
 
 draw_geom_barcode = function(data,panel_scales,coord,height) {
   coords <- coord$transform(data, panel_scales)
-  grid::rectGrob(
+  rect = grid::rectGrob(
     coords$xmin, coords$ymax,
     width = coords$xmax - coords$xmin,
     height = grid::unit(height*.pt,"mm"),
     default.units = "native",
-    just = c("left", "bottom"),
+    just = c("left", "top"),
     gp = grid::gpar(
       col = alpha(coords$colour, coords$alpha),
       fill = alpha(coords$fill, coords$alpha),
@@ -100,6 +100,8 @@ draw_geom_barcode = function(data,panel_scales,coord,height) {
       lineend = "butt"
     )
   )
+  rect
+#  ggplot2:::absoluteGrob(grid::gList(rect))
 }
 
 #' @export
@@ -115,7 +117,8 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             return(self$super$draw_panel(data, panel_scales, coord))
                           }
                           barcode = draw_geom_barcode(unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')]),panel_scales,coord,height)
-                          return (ggplot2::GeomCustomAnn$draw_panel(NULL, panel_scales, coord, barcode, panel_scales$x.range[1], panel_scales$x.range[2],0, 1))
+                          coord$render_axis_h = function(...) { return(barcode) }
+                          grid::nullGrob()
                         }
 )
 
