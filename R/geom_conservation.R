@@ -74,13 +74,7 @@ geom_barcode <- function(mapping = NULL, data = NULL, stat = "conservation",
       ...
     )
   )
-  # http://stackoverflow.com/questions/8905101/how-can-i-use-a-graphic-imported-with-grimport-as-axis-tick-labels-in-ggplot2-u
-  # It doesn't look like we can override axis.text.x (or anything for that matter)
-  # with a custom grob, so there's no easy way to replace the axis.
 
-  if (overlay == FALSE) {
-    layer = list(layer,theme(plot.margin=unit(x=c(1.5*height*.pt,0,0,0),units="mm")), scale_alpha(name="Conservation",labels=c(' ','.',':','*'),breaks=c(0,1/3,2/3,1),range=c(0,1)) )
-  }
   layer
 }
 
@@ -101,7 +95,6 @@ draw_geom_barcode = function(data,panel_scales,coord,height) {
     )
   )
   rect
-#  ggplot2:::absoluteGrob(grid::gList(rect))
 }
 
 #' @export
@@ -117,11 +110,28 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             return(self$super$draw_panel(data, panel_scales, coord))
                           }
                           barcode = draw_geom_barcode(unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')]),panel_scales,coord,height)
-                          coord$render_axis_h = function(...) { return(barcode) }
+                          coord$original_axis = coord$render_axis_h
+                          coord$render_axis_h = function(self,...) {
+                            # This could be considered using a private
+                            # api for editing the gtable, but because
+                            # it's an absoluteGrob, we need to do
+                            # append the barcode to the gtable to get
+                            # all the heights right.
+
+                            orig_axis = self$original_axis(...)
+
+                            axis_table = orig_axis$children[[2]]
+                            axis_table = gtable::gtable_add_rows(axis_table,grid::grobHeight(barcode),0)
+                            axis_table = gtable::gtable_add_grob(axis_table,list(barcode),t=seq_along(list(barcode)),l=1)
+                            orig_axis$vp = grid::viewport(y = 1, just = "top", height = gtable::gtable_height(axis_table))
+                            orig_axis$height = gtable::gtable_height(axis_table)
+                            orig_axis$children[[2]] = axis_table
+
+                            orig_axis
+                          }
                           grid::nullGrob()
                         }
 )
-
 
 #' Stat to calculate a conservation value using the clustalw scoring
 #' @export
