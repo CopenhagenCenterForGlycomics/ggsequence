@@ -2,10 +2,12 @@
 
 S3method(ggplot,MsaAAMultipleAlignment)
 export(GeomBarcode)
+export(GeomBracket)
 export(StatAlignedSite)
 export(StatConservation)
 export(StatGappedSequence)
 export(geom_barcode)
+export(geom_bracket)
 export(stat_aligned_site)
 export(stat_conservation)
 export(stat_gapped_sequence)
