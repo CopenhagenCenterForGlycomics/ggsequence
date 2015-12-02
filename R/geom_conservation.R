@@ -165,7 +165,6 @@ StatConservation <- ggplot2::ggproto("StatConservation", ggplot2::Stat,
                           data$conservation = get_conservation(data)
                           data$pos = as.numeric(data$pos)
                           if (alone) {
-                            data$seqname = data$seqname #factor(rep("conservation",nrow(data)),levels=levels(data$seqname) )
                             data$y = as.numeric(data$seqname)
                           }
                           return(unique(data))
