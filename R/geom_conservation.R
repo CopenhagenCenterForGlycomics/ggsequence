@@ -48,12 +48,6 @@ conservation_default_aes <- function(mapping) {
   mapping = do.call( ggplot2::aes, c( mapping, default_mapping ) )
 }
 
-#pBrackets
-
-overlay_conservation <- function(alignment.plot) {
-  alignment.plot + geom_tile(aes(x=pos,y=seqid),fill='black',alpha=get_conservation(alignment.plot$data))
-}
-
 #' Wrap the venn diagram into a geom
 #' @export
 geom_barcode <- function(mapping = NULL, data = NULL, stat = "conservation",
