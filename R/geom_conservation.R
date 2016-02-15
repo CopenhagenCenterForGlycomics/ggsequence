@@ -91,6 +91,8 @@ draw_geom_barcode = function(data,panel_scales,coord,height) {
   rect
 }
 
+is.zero <- function(x) is.null(x) || inherits(x, "zeroGrob")
+
 #' @export
 GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                         draw_panel = function(self,data, panel_scales, coord,overlay=F,height=10) {
@@ -113,6 +115,13 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             # all the heights right.
 
                             orig_axis = self$original_axis(...)
+
+                            # If we don't have an axis, (which might happen if we've only got one short sequence)
+                            # return the barcode as a grob on its own
+
+                            if (is.zero(orig_axis)) {
+                              return (barcode)
+                            }
 
                             axis_table = orig_axis$children[[2]]
                             axis_table = gtable::gtable_add_rows(axis_table,grid::grobHeight(barcode),0)
