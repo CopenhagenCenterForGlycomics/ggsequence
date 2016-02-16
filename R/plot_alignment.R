@@ -22,6 +22,6 @@ plot_alignment <- function(alignment) {
 
 #' Constructor for a plot from an alignment
 #' @export
-ggplot.MsaAAMultipleAlignment = function(alignment) {
+ggplot.AAMultipleAlignment = function(alignment) {
 	plot_alignment(alignment)
 }
