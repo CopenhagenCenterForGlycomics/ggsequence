@@ -1,9 +1,21 @@
 
 plot_alignment <- function(alignment) {
-	starts = unlist(as.vector(sapply(attributes(alignment)$sequences,BiocGenerics::start)))
-	ends = unlist(as.vector(sapply(attributes(alignment)$sequences,BiocGenerics::end)))
-	seqnames = unlist(as.vector(sapply(attributes(alignment)$sequences,names)))
-	seq.ids = unlist(sapply(names(attributes(alignment)$sequences),function(seq.id) { rep(seq.id,length(attributes(alignment)$sequences[[seq.id]])) },simplify=F) )
+	starts = unlist(as.vector(sapply(attributes(alignment)$sequences,function(x) BiocGenerics::start(x)[1]  )))
+	ends = unlist(as.vector(sapply(attributes(alignment)$sequences,function(x) BiocGenerics::end(x)[1] )))
+	seqnames = unlist(as.vector(sapply(names(attributes(alignment)$sequences),function(seq.id) {
+		if ( is( attributes(alignment)$sequences[[seq.id]], 'XString' )) {
+			seq.id
+		} else {
+			names( attributes(alignment)$sequences[[seq.id]] )
+		}
+	})))
+	seq.ids = unlist(sapply(names(attributes(alignment)$sequences),function(seq.id) {
+		if ( is( attributes(alignment)$sequences[[seq.id]], 'XStringViews' )) {
+			rep(seq.id,length(attributes(alignment)$sequences[[seq.id]]))
+		} else {
+			seq.id
+		}
+	},simplify=F) )
 	seqdata = data.frame(seq.id=seq.ids,seqname=seqnames,start=starts,end=ends)
 	aas.frame = as.data.frame(Biostrings::as.matrix(alignment))
 	colnames(aas.frame) <- 1:ncol(aas.frame)
