@@ -1,4 +1,6 @@
-#' Stat to re-align columns in a data frame using the alignment information
+#' Stat to calculate the starts and ends of sequence in an alignment.
+#' Populate the ..seqstart.. and ..seqend.. so that they contain the
+#' start and ends of each segment of sequence.
 #' @export
 stat_gapped_sequence <- function(mapping = NULL, data = NULL, geom = "rect",
                           position = "identity",
