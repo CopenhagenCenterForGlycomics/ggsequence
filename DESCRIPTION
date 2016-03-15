@@ -14,5 +14,6 @@ Imports:
 		grid,
 		ggsugar,
 		plyr
+Remotes: hirenj/ggsugar
 License: MIT
 LazyData: true

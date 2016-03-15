@@ -1,7 +1,7 @@
 language: r
-sudo: true
+sudo: false
+cache: packages
 warnings_are_errors: false
 bioc_required: true
 r_github_packages:
  - hadley/ggplot2
- - hirenj/ggsugar
