@@ -5,4 +5,4 @@ warnings_are_errors: false
 bioc_required: true
 r_github_packages:
  - hadley/ggplot2
- r_check_args: --as-cran --no-manual
+r_check_args: --as-cran --no-manual
