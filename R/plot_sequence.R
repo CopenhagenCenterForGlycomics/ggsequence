@@ -15,16 +15,17 @@ plot_sequence <- function(...) {
 	aas.melted = reshape2::melt( merge(aas.frame,seqdata,by='seqname'), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
 	aas.melted$pos = as.numeric(aas.melted$pos)
 	aas.melted$seqname = factor(aas.melted$seqname,levels=rev(unique(seqnames)))
-	out.plot = 	ggplot(aas.melted,aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+
-				scale_x_discrete(name="Amino acid position",limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=10))+
-				theme_minimal()+
-				theme(panel.grid=ggplot2::element_blank())
-	out.plot = out.plot + scale_y_discrete(name="Sequence")
+	out.plot = 	ggplot2::ggplot(aas.melted,ggplot2::aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+
+				ggplot2::scale_x_discrete(name="Amino acid position",limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=10))+
+				ggplot2::theme_minimal()+
+				ggplot2::theme(panel.grid=ggplot2::element_blank())
+	out.plot = out.plot + ggplot2::scale_y_discrete(name="Sequence")
 	out.plot
 }
 
 #' Constructor for a plot from an XString object
 #' Give the sequence a name when calling ggplot(my.sequence=AAString('STAT'))
+#' @importFrom ggplot2 ggplot
 #' @export
 ggplot.XString = function(...) {
 	plot_sequence(...)
