@@ -16,6 +16,6 @@ Imports:
 		plyr
 Suggests:
 		testthat
-Remotes: hirenj/ggsugar
+Remotes: github::hirenj/ggsugar
 License: MIT
 LazyData: true
