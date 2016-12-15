@@ -122,13 +122,12 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             if (is.zero(orig_axis)) {
                               return (barcode)
                             }
-
-                            axis_table = orig_axis$children[[2]]
+                            axis_table = orig_axis$bottom$children[[2]]
                             axis_table = gtable::gtable_add_rows(axis_table,grid::grobHeight(barcode),0)
                             axis_table = gtable::gtable_add_grob(axis_table,list(barcode),t=seq_along(list(barcode)),l=1)
                             orig_axis$vp = grid::viewport(y = 1, just = "top", height = gtable::gtable_height(axis_table))
                             orig_axis$height = gtable::gtable_height(axis_table)
-                            orig_axis$children[[2]] = axis_table
+                            orig_axis$bottom$children[[2]] = axis_table
 
                             orig_axis
                           }
