@@ -119,8 +119,9 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             # If we don't have an axis, (which might happen if we've only got one short sequence)
                             # return the barcode as a grob on its own
 
-                            if (is.zero(orig_axis)) {
-                              return (barcode)
+                            if (is.zero(orig_axis) || is(orig_axis$bottom,'zeroGrob')) {
+                              orig_axis$bottom = barcode
+                              return (orig_axis)
                             }
                             axis_table = orig_axis$bottom$children[[2]]
                             axis_table = gtable::gtable_add_rows(axis_table,grid::grobHeight(barcode),0)
