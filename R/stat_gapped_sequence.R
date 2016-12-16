@@ -39,8 +39,12 @@ StatGappedSequence <- ggplot2::ggproto("StatGappedSequence", ggplot2::Stat,
                             groups = as.data.frame(groups)
                             names(groups) = c('seqstart','seqend')
                             groups$y = yval
-                            groups                         
+                            groups
                           })
+                          trans$seqstart = trans$seqstart - 0.5
+                          trans$seqend = trans$seqend + 0.5
+                          trans[trans$seqstart < 0,] = 0
+                          trans$seqend = ifelse(trans$seqend > max(data$pos),trans$seqend-0.5,trans$seqend)
                           return(trans)
                         }
 )
