@@ -1,5 +1,6 @@
 
 plot_alignment <- function(alignment) {
+  stopifnot('sequences' %in% names(attributes(alignment)))
 	starts = unlist(as.vector(sapply(attributes(alignment)$sequences,function(x) BiocGenerics::start(x)[1]  )))
 	ends = unlist(as.vector(sapply(attributes(alignment)$sequences,function(x) BiocGenerics::end(x)[1] )))
 	seqnames = unlist(as.vector(sapply(names(attributes(alignment)$sequences),function(seq.id) {

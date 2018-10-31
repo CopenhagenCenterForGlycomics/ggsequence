@@ -3,3 +3,6 @@
 .RData
 pkg
 man
+*.Rcheck
+*.pdf
+*.tar.gz
