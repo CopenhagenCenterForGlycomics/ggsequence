@@ -44,7 +44,10 @@ conservation_default_aes <- function(mapping) {
   if (is.null(mapping)) {
     mapping = default_mapping
   }
-  default_mapping = default_mapping[ ! names(default_mapping) %in% names(mapping), ]
+  missing_names = ! names(default_mapping) %in% names(mapping)
+  if (any(missing_names)) {
+    default_mapping = default_mapping[missing_names]
+  }
   mapping = do.call( ggplot2::aes, c( mapping, default_mapping ) )
 }
 
