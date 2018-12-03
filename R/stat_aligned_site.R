@@ -29,6 +29,17 @@ StatAlignedSite <- ggplot2::ggproto("StatAlignedSite", ggplot2::Stat,
                         }
 )
 
+#' @export
+alignSite <- function(alignment,data,id.column,site.columns) {
+  alignment = as.character(alignment)
+  data = data[ data[[id.column]] %in% names(alignment), ]
+  rescaled = sapply( site.columns, function(col) {
+    apply( data[,c(id.column,col)],1, function(row) {
+      rescale_site(alignment[[ row[1] ]], as.numeric(row[2]) )
+    })
+  },simplify=F)
+  cbind(data[,! names(data) %in% site.columns],as.data.frame(rescaled))
+}
 
 compute_sites <- function(alignment.data,sites,id.column,site.columns) {
   alignment =  apply( t(sapply(1:max(alignment.data$y), function(y) { alignment.data[alignment.data$y == y,'aa']})), 1, function(row) paste(row,collapse='') )
