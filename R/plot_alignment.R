@@ -11,7 +11,9 @@ plot_alignment <- function(alignment) {
 		}
 	})))
 	seq.ids = unlist(sapply(names(attributes(alignment)$sequences),function(seq.id) {
-		if ( is( attributes(alignment)$sequences[[seq.id]], 'XStringViews' )) {
+		if ( is( attributes(alignment)$sequences[[seq.id]], 'XStringViews' ) |
+			 is( attributes(alignment)$sequences[[seq.id]], 'ViewSet' )
+		   ) {
 			rep(seq.id,length(attributes(alignment)$sequences[[seq.id]]))
 		} else {
 			seq.id
