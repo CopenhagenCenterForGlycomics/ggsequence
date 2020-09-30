@@ -111,31 +111,33 @@ GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                             return(self$super()$draw_panel(unique(data), panel_scales, coord))
                           }
                           barcode = draw_geom_barcode(unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')]),panel_scales,coord,height)
-                          coord$original_axis = coord$render_axis_h
-                          coord$render_axis_h = function(self,...) {
-                            # This could be considered using a private
-                            # api for editing the gtable, but because
-                            # it's an absoluteGrob, we need to do
-                            # append the barcode to the gtable to get
-                            # all the heights right.
+                          if ( ! ('original_axis' %in% names(coord)) ) {
+                            coord$original_axis <- coord$render_axis_h
+                            coord$render_axis_h <- function(self,...) {
+                              # This could be considered using a private
+                              # api for editing the gtable, but because
+                              # it's an absoluteGrob, we need to do
+                              # append the barcode to the gtable to get
+                              # all the heights right.
 
-                            orig_axis = self$original_axis(...)
+                              orig_axis = self$original_axis(...)
 
-                            # If we don't have an axis, (which might happen if we've only got one short sequence)
-                            # return the barcode as a grob on its own
+                              # If we don't have an axis, (which might happen if we've only got one short sequence)
+                              # return the barcode as a grob on its own
 
-                            if (is.zero(orig_axis) || is(orig_axis$bottom,'zeroGrob')) {
-                              orig_axis$bottom = barcode
-                              return (orig_axis)
+                              if (is.zero(orig_axis) || is(orig_axis$bottom,'zeroGrob')) {
+                                orig_axis$bottom = barcode
+                                return (orig_axis)
+                              }
+                              axis_table = orig_axis$bottom$children[[2]]
+                              axis_table = gtable::gtable_add_rows(axis_table,grid::grobHeight(barcode),0)
+                              axis_table = gtable::gtable_add_grob(axis_table,list(barcode),t=seq_along(list(barcode)),l=1)
+                              orig_axis$vp = grid::viewport(y = 1, just = "top", height = gtable::gtable_height(axis_table))
+                              orig_axis$height = gtable::gtable_height(axis_table)
+                              orig_axis$bottom$children[[2]] = axis_table
+
+                              orig_axis
                             }
-                            axis_table = orig_axis$bottom$children[[2]]
-                            axis_table = gtable::gtable_add_rows(axis_table,grid::grobHeight(barcode),0)
-                            axis_table = gtable::gtable_add_grob(axis_table,list(barcode),t=seq_along(list(barcode)),l=1)
-                            orig_axis$vp = grid::viewport(y = 1, just = "top", height = gtable::gtable_height(axis_table))
-                            orig_axis$height = gtable::gtable_height(axis_table)
-                            orig_axis$bottom$children[[2]] = axis_table
-
-                            orig_axis
                           }
                           grid::nullGrob()
                         }

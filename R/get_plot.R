@@ -1,6 +1,6 @@
 get_plot = function() {
 
-	site_data = data.frame(seq.ids=c('bar','foo'),site=c(4,5),class=c('galnac','gal(b1-3)galnac'))
+	site_data = data.frame(seq.ids=c('bar','foo'),site=c(4,5),sugar=c('galnac','gal(b1-3)galnac'))
 
 	sigpep_data = data.frame(seq.ids=c('bar','foo'),start=c(1,1),end=c(3,4))
 
