@@ -91,7 +91,7 @@ draw_axis_labels <- function(indexes) {
       x=df$x,
       just = c("center"),
 
-      gp = gpar(fontsize = 8, col = 'black')
+      gp = grid::gpar(fontsize = 8, col = 'black')
     )
   })
 }
