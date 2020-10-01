@@ -1,30 +1,17 @@
 require(grid)
 
-coord_conservation <- function(xlim = NULL, ylim = NULL, expand = TRUE,
-                            default = FALSE, clip = "on") {
+coord_conservation <- function(alignment_axis=TRUE,conservation_axis=TRUE) {
   ggproto(NULL, CoordConservation,
-    limits = list(x = xlim, y = ylim),
-    expand = expand,
-    default = default,
-    clip = clip
+    limits = list(x = NULL, y = NULL),
+    expand = TRUE,
+    default = FALSE,
+    clip = "on",
+    alignment_axis = alignment_axis,
+    conservation_axis = conservation_axis
   )
 }
 
-pad_conservation <- function(conservation,range) {
-  padding=0
-  conservation = c(rep(-10,padding),0, conservation , rep(-10,padding))
-  indices = seq(-1*padding,length(conservation)-padding-1)
-  conservation[indices[which(indices >= ceiling(range[1]) & indices <= floor(range[2]))]+padding+1]
-}
-
-select_conservation <- function(conservation,range) {
-  conservation = c(rep(-10,padding),0, conservation , rep(-10,padding))
-  indices = seq(-1*padding,length(conservation)-padding-1)
-  conservation[indices[which(indices >= ceiling(range[1]) & indices <= floor(range[2]))]+padding+1]
-}
-
-
-mytemp_grob <- function(conservation,range,position,theme) {
+draw_conservation_grobs <- function(conservation) {
   # gTree(children=gList(
   # grid::rectGrob(
   #   0, 0,
@@ -56,7 +43,7 @@ mytemp_grob <- function(conservation,range,position,theme) {
   )
 }
 
-get_conservation_from_scale <- function(scale_obj,range) {
+get_conservation_from_scale <- function(scale_obj) {
   cons=attributes(scale_obj$scale)$conservation
   limits=c( min(scale_obj$limits), max(scale_obj$limits))
   rescaler=scale_obj$rescale
@@ -71,6 +58,37 @@ get_conservation_from_scale <- function(scale_obj,range) {
   return( data.frame( x = x, value = wanted_cons, width=rescaler(2)-rescaler(1) ))
 }
 
+get_aa_indexes_from_scale <- function(scale_obj) {
+  indexes = attributes(scale_obj$scale)$aligned_indexes
+  limits=c( min(scale_obj$limits), max(scale_obj$limits))
+  rescaler=scale_obj$rescale
+  breaks = scale_obj$get_breaks()
+  break_size = 10
+  if (length(breaks) > 1) {
+    break_size = breaks[2] - breaks[1]
+  }
+  indexes_breaks = lapply(indexes, function(seq_idxs) {
+    seq_idxs = setNames(seq_idxs,1:length(seq_idxs))
+    seq_idxs = seq_idxs[seq_idxs >= limits[1] & seq_idxs <= limits[2]]
+    wanted_indexes = seq(0,max(as.numeric(names(seq_idxs))),by=break_size)
+    wanted_positions = rescaler(seq_idxs[wanted_indexes[wanted_indexes > 0]])
+    data.frame(x=wanted_positions,label=names(wanted_positions))
+  })
+  indexes_breaks
+}
+
+draw_axis_labels <- function(indexes) {
+
+  lapply(1:length(indexes), function(offset) {
+    df = indexes[[offset]]
+    grid::textGrob(
+      label=df$label,
+      x=df$x,
+      y=grid::unit((offset-1)*.pt,"mm"),
+      gp = gpar(fontsize = 8, col = 'black')
+    )
+  })
+}
 
 #' @rdname ggplot2-ggproto
 #' @format NULL
@@ -80,12 +98,30 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
 
   is_linear = function() TRUE,
   is_free = function() TRUE,
-
   render_axis_h = function(panel_params, theme) {
-    bottom_grob = panel_guides_grob(panel_params$guides, position = "bottom", theme = theme)
+    kidlist = gList(panel_guides_grob(panel_params$guides, position = "bottom", theme = theme))
+
+    if (panel_params$alignment_axis) {
+      new_axis = draw_axis_labels(get_aa_indexes_from_scale(panel_params$x))
+      i = 1
+      while(i <= length(new_axis)) {
+        kidlist[[ length(kidlist) + 1 ]] = new_axis[[i]] 
+        i <- i+1     
+      }
+    }
+    top_grob = zeroGrob()
+    if (panel_params$conservation_axis) {
+      top_grob <- draw_conservation_grobs(get_conservation_from_scale(panel_params$x))
+    }
+    viewport = grid::viewport(
+      height=grid::unit(3 * .pt,"mm"),
+      just=c("centre","bottom")
+    )
     list(
-      top = mytemp_grob(get_conservation_from_scale(panel_params$x), position = "bottom", theme = theme),#ggplot2::zeroGrob(),#panel_guides_grob(panel_params$guides, position = "top", theme = theme),
-      bottom = bottom_grob
+      top = top_grob,
+      bottom = gTree(
+        children=kidlist, vp=viewport
+      )
     )
   },
 
@@ -93,8 +129,13 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
     if ('conservation' %in% names(params)) {
       attributes(scale_x)$conservation <- params$conservation
     }
+    if ('aligned_indexes' %in% names(params)) {
+      attributes(scale_x)$aligned_indexes <- params$aligned_indexes      
+    }
     parent <- ggproto_parent(CoordCartesian, self)
     panel_params <- parent$setup_panel_params(scale_x, scale_y, params)
+    panel_params$conservation_axis = self$conservation_axis
+    panel_params$alignment_axis = self$alignment_axis
     panel_params
   },
   
