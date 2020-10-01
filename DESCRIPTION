@@ -20,4 +20,4 @@ Suggests:
 Remotes: github::hirenj/ggsugar
 License: MIT
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 7.1.0
