@@ -22,20 +22,18 @@ get_conservation <- function(data) {
                 "[FVLIM]",
                 "[HFY]")
 
-  consvals = plyr::ddply(data,'pos',function(aas) {
+  consframe = plyr::dlply(data,'pos',function(aas) {
     if ( length(unique(aas$aa)) == 1 && aas$aa[1] != '-' ) {
-      aas$cons <- 1
+      1
     } else if ( max(sapply(strong_res,function(re) { length(grep(re,aas$aa)) })) == length(aas$aa) ) {
-      aas$cons <- 2/3
+      2/3
     } else if ( max(sapply(weak_res,function(re) { length(grep(re,aas$aa)) })) == length(aas$aa) ) {
-      aas$cons <- 1/3
+      1/3
     } else {
-      aas$cons <- 0
+      0
     }
-    aas
-  })$cons
-
-  consvals
+  })
+  unlist(consframe)
 }
 
 
