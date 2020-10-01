@@ -1,5 +1,6 @@
 require(grid)
 
+#' @export
 coord_conservation <- function(alignment_axis=TRUE,conservation_axis=TRUE) {
   ggproto(NULL, CoordConservation,
     limits = list(x = NULL, y = NULL),
@@ -88,7 +89,8 @@ draw_axis_labels <- function(indexes) {
     grid::textGrob(
       label=df$label,
       x=df$x,
-      y=grid::unit((offset-1)*.pt,"mm"),
+      just = c("center"),
+
       gp = gpar(fontsize = 8, col = 'black')
     )
   })
@@ -103,29 +105,22 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
   is_linear = function() TRUE,
   is_free = function() TRUE,
   render_axis_h = function(panel_params, theme) {
-    kidlist = gList(panel_guides_grob(panel_params$guides, position = "bottom", theme = theme))
+    bottom_axis_grob = panel_guides_grob(panel_params$guides, position = "bottom", theme = theme)
 
+    margin = unit(0.5, "line")
     if (panel_params$alignment_axis) {
-      new_axis = draw_axis_labels(get_aa_indexes_from_scale(panel_params$x))
-      i = 1
-      while(i <= length(new_axis)) {
-        kidlist[[ length(kidlist) + 1 ]] = new_axis[[i]] 
-        i <- i+1     
-      }
-    }
-    top_grob = zeroGrob()
-    if (panel_params$conservation_axis) {
-      top_grob <- draw_conservation_grobs(get_conservation_from_scale(panel_params$x))
-    }
-    viewport = grid::viewport(
-      height=grid::unit(3 * .pt,"mm"),
-      just=c("centre","bottom")
-    )
-    list(
-      top = top_grob,
-      bottom = gTree(
-        children=kidlist, vp=viewport
+      new_axis = rev(draw_axis_labels(get_aa_indexes_from_scale(panel_params$x)))
+      bottom_axis_grob <- gridExtra::arrangeGrob(grobs = c(list(bottom_axis_grob), new_axis ),
+        heights=unit.c(grobHeight(bottom_axis_grob), rep( unit(2*.pt,"mm")+margin, length(new_axis) ))
       )
+    }
+    top_axis_grob = zeroGrob()
+    if (panel_params$conservation_axis) {
+      top_axis_grob <- draw_conservation_grobs(get_conservation_from_scale(panel_params$x))
+    }
+    list(
+      top = top_axis_grob,
+      bottom = bottom_axis_grob
     )
   },
 
