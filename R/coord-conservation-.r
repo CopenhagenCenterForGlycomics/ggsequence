@@ -27,7 +27,7 @@ draw_conservation_grobs <- function(conservation) {
   #     lineend = "butt"
   #   )
   # ), // OTHER GROB HERE)
-  
+  conservation = conservation[conservation$x >= 0,]
   grid::rectGrob(
     conservation$x - 0.5*conservation$width, 0,
     width = conservation$width,
@@ -81,6 +81,10 @@ draw_axis_labels <- function(indexes) {
 
   lapply(1:length(indexes), function(offset) {
     df = indexes[[offset]]
+    df = df[df$x >= 0,]
+    if (nrow(df) < 1) {
+      return(zeroGrob())
+    }
     grid::textGrob(
       label=df$label,
       x=df$x,
