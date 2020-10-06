@@ -71,6 +71,9 @@ get_aa_indexes_from_scale <- function(scale_obj) {
   indexes_breaks = lapply(indexes, function(seq_idxs) {
     seq_idxs = setNames(seq_idxs,1:length(seq_idxs))
     seq_idxs = seq_idxs[seq_idxs >= limits[1] & seq_idxs <= limits[2]]
+    if (length(seq_idxs) < 1) {
+      return (data.frame())
+    }
     wanted_indexes = seq(0,max(as.numeric(names(seq_idxs))),by=break_size)
     wanted_positions = rescaler(seq_idxs[wanted_indexes[wanted_indexes > 0]])
     data.frame(x=wanted_positions,label=names(wanted_positions))
@@ -111,7 +114,7 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
     if (panel_params$alignment_axis) {
       new_axis = rev(draw_axis_labels(get_aa_indexes_from_scale(panel_params$x)))
       bottom_axis_grob <- gridExtra::arrangeGrob(grobs = c(list(bottom_axis_grob), new_axis ),
-        heights=unit.c(grobHeight(bottom_axis_grob), rep( unit(2*.pt,"mm")+margin, length(new_axis) ))
+        heights=grid::unit.c(grid::grobHeight(bottom_axis_grob), rep( unit(2*.pt,"mm")+margin, length(new_axis) ))
       )
     }
     top_axis_grob = zeroGrob()
@@ -143,8 +146,9 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
     rescaled_idxs = lapply( unique(alignment_data$seq.id), function(seqid) {
       max_idx = max(alignment_data[alignment_data$seq.id == seqid, 'end'])
       min_idx = max(alignment_data[alignment_data$seq.id == seqid, 'start'])
+      fullseq = paste(alignment_data[alignment_data$seq.id == seqid, 'aa'],collapse='')
       sapply( min_idx:max_idx, function(site) {
-        rescale_site( alignment_data[alignment_data$seq.id == seqid, 'aa'], site )
+        rescale_site( fullseq , site )
       })
     })
     list(conservation=get_conservation(alignment_data),aligned_indexes=rescaled_idxs)

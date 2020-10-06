@@ -56,14 +56,34 @@ compute_sites <- function(alignment.data,sites,id.column,site.columns) {
   return (merged[,c(1,4:ncol(merged))])
 }
 
+cache_data = new.env()
+
+assign("parts", list(placeholder=list('x'=1)), envir=cache_data)
+
+cached_split = function(seq) {
+  fullseq = seq
+
+  current_cache = get("parts",envir=cache_data)
+
+  if (! (fullseq %in% names(current_cache))) {
+    partdata = Map( function(part) {
+      if (grepl('[A-Za-z]',part)) {
+        part
+      } else {
+        nchar(part)
+      }
+    }, as.list(unlist(strsplit(seq,'\\b',perl=T))))
+    current_cache[[fullseq]] = partdata
+    assign("parts",current_cache,envir=cache_data)
+  }
+
+  current_cache = get("parts",envir=cache_data)
+  seq_parts = current_cache[[fullseq]]
+  seq_parts
+}
+
 rescale_site <- function(seq,site) {
-  seq_parts = Map( function(part) {
-    if (grepl('[A-Za-z]',part)) {
-      part
-    } else {
-      nchar(part)
-    }
-  }, as.list(unlist(strsplit(seq,'\\b',perl=T))))
+  seq_parts = cached_split(seq)
   pos = 1
   for (part in 1:length(seq_parts)) {
     if (is.numeric(seq_parts[[part]])) {
