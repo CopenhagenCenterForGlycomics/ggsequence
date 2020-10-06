@@ -113,7 +113,7 @@ StatConservation <- ggplot2::ggproto("StatConservation", ggplot2::Stat,
                           data[data$seqname != 'conservation',]
                         },
                         compute_panel = function(data,scales,alone=T) {
-                          data$conservation = get_conservation(data)
+                          data$conservation = unlist(sapply(get_conservation(data), function(x) rep(x,max(data$y)-min(data$y)+1),simplify=F))
                           data$pos = as.numeric(data$pos)
                           if (alone) {
                             data$y = as.numeric(data$seqname)
