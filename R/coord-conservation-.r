@@ -81,21 +81,18 @@ get_aa_indexes_from_scale <- function(scale_obj) {
   indexes_breaks
 }
 
-draw_axis_labels <- function(indexes) {
-
+draw_axis_labels <- function(indexes,element) {
   lapply(1:length(indexes), function(offset) {
     df = indexes[[offset]]
     df = df[df$x >= 0,]
     if (nrow(df) < 1) {
       return(zeroGrob())
     }
-    grid::textGrob(
-      label=df$label,
-      x=df$x,
-      just = c("center"),
-
-      gp = grid::gpar(fontsize = 8, col = 'black')
-    )
+    rlang::exec(element_grob,element,
+      df$x,
+      TRUE,
+      label = df$label,
+      check.overlap = FALSE)
   })
 }
 
@@ -108,13 +105,17 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
   is_linear = function() TRUE,
   is_free = function() TRUE,
   render_axis_h = function(panel_params, theme) {
+
     bottom_axis_grob = panel_guides_grob(panel_params$guides, position = "bottom", theme = theme)
 
     margin = unit(0.5, "line")
     if (panel_params$alignment_axis) {
-      new_axis = rev(draw_axis_labels(get_aa_indexes_from_scale(panel_params$x)))
+      new_axis = draw_axis_labels(get_aa_indexes_from_scale(panel_params$x),calc_element('axis.text.x',theme))
+      new_heights = do.call(grid::unit.c, lapply(new_axis,grid::grobHeight))
+      new_heights = new_heights
+      all_heights = grid::unit.c( grid::grobHeight(bottom_axis_grob), new_heights)+2*margin
       bottom_axis_grob <- gridExtra::arrangeGrob(grobs = c(list(bottom_axis_grob), new_axis ),
-        heights=grid::unit.c(grid::grobHeight(bottom_axis_grob), rep( unit(2*.pt,"mm")+margin, length(new_axis) ))
+        heights=all_heights,ncol=1
       )
     }
     top_axis_grob = zeroGrob()
