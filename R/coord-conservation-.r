@@ -64,6 +64,7 @@ get_aa_indexes_from_scale <- function(scale_obj) {
   limits=c( min(scale_obj$limits), max(scale_obj$limits))
   rescaler=scale_obj$rescale
   breaks = scale_obj$get_breaks()
+  breaks = breaks[! is.na(breaks) ]
   break_size = 10
   if (length(breaks) > 1) {
     break_size = breaks[2] - breaks[1]
@@ -76,6 +77,7 @@ get_aa_indexes_from_scale <- function(scale_obj) {
     }
     wanted_indexes = seq(0,max(as.numeric(names(seq_idxs))),by=break_size)
     wanted_positions = rescaler(seq_idxs[wanted_indexes[wanted_indexes > 0]])
+    wanted_positions = wanted_positions[!is.na(wanted_positions)]
     data.frame(x=wanted_positions,label=names(wanted_positions))
   })
   indexes_breaks
@@ -110,7 +112,7 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
 
     margin = unit(0.5, "line")
     if (panel_params$alignment_axis) {
-      new_axis = draw_axis_labels(get_aa_indexes_from_scale(panel_params$x),calc_element('axis.text.x',theme))
+      new_axis = rev(draw_axis_labels(get_aa_indexes_from_scale(panel_params$x),calc_element('axis.text.x',theme)))
       new_heights = do.call(grid::unit.c, lapply(new_axis,grid::grobHeight))
       new_heights = new_heights
       all_heights = grid::unit.c( grid::grobHeight(bottom_axis_grob), new_heights)+2*margin
