@@ -4,7 +4,7 @@ get_plot = function() {
 
 	sigpep_data = data.frame(seq.ids=c('bar','foo'),start=c(1,1),end=c(3,4))
 
-	plot = 	ggplot(do_alignment(c(foo='MNTTTMMMNPPPPMNTTTMMMNPPPPMNTTTMMMNPPPPMNTTTMMMNPPPP',bar='NNSMMMPPNNSMMMPPNNSMMMPPNNSMMMPP')))+
+	plot = 	ggplot(do_alignment(c(foo='MNTTTMMMNPPPPMNTTTMMMNPPPPMNTTTMMMNPPPPMNNSMMMPPPP',bar='NNSMMMPPNNSMMMPPNNSMMMPPNNSMMMPP')))+
 		    geom_text(aes(label=stat(aa),color=stat(conservation)),stat="conservation")+
 			geom_segment(aes(x=stat(seqstart),xend=stat(seqend)),stat="gappedSequence",size=2,colour="black",alpha=0.5)+
 			geom_sugar(aes(x=stat(site)),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),size=4,offset=2)+

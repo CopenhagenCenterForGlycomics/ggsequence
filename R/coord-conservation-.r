@@ -75,7 +75,7 @@ get_aa_indexes_from_scale <- function(scale_obj) {
     if (length(seq_idxs) < 1) {
       return (data.frame())
     }
-    wanted_indexes = seq(0,max(as.numeric(names(seq_idxs))),by=break_size)
+    wanted_indexes = c(1,seq(0,max(as.numeric(names(seq_idxs))),by=break_size))
     wanted_positions = rescaler(seq_idxs[wanted_indexes[wanted_indexes > 0]])
     wanted_positions = wanted_positions[!is.na(wanted_positions)]
     data.frame(x=wanted_positions,label=names(wanted_positions))
