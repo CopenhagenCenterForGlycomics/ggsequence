@@ -6,3 +6,4 @@ man
 *.Rcheck
 *.pdf
 *.tar.gz
+.cache
