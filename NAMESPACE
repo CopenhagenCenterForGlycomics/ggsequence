@@ -2,6 +2,11 @@
 
 S3method(ggplot,AAMultipleAlignment)
 S3method(ggplot,XString)
+export(CoordConservation)
+export(GeomBarcode)
+export(StatAlignedSite)
+export(StatConservation)
+export(StatGappedSequence)
 export(alignSite)
 export(coord_conservation)
 export(geom_barcode)
