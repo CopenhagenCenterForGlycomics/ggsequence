@@ -23,6 +23,7 @@ stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
   )
 }
 
+#' @export
 StatAlignedSite <- ggplot2::ggproto("StatAlignedSite", ggplot2::Stat,
                         default_aes = ggplot2::aes(y=..y..,yend=..y..),
                         compute_panel = function(self,data,scales,id.column=NULL,annotations=NULL,columns=c()) {

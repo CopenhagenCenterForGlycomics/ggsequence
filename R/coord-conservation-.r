@@ -101,6 +101,7 @@ draw_axis_labels <- function(indexes,element) {
   })
 }
 
+#' @export
 CoordConservation <- ggproto("CoordConservation", CoordCartesian,
 
   is_linear = function() TRUE,
