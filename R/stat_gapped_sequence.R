@@ -20,7 +20,6 @@ stat_gapped_sequence <- function(mapping = NULL, data = NULL, geom = "rect",
   )
 }
 
-#' @export
 StatGappedSequence <- ggplot2::ggproto("StatGappedSequence", ggplot2::Stat,
                         default_aes = ggplot2::aes(x=..seqstart..,xend=..seqend..,y=..y..,yend=..y..),
                         compute_panel = function(data,scales,annotations=NULL,columns=c()) {

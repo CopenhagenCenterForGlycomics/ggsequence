@@ -6,6 +6,7 @@ Description: Aligns protein sequences and produces plots that can be further
     annotated with extra data such as PTMs
 Depends:
     R (>= 3.2.2),
+    methods,
     ggplot2(>= 1.0.0)
 Imports:
     BiocGenerics,

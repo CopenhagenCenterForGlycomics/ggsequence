@@ -38,7 +38,7 @@ get_conservation <- function(data) {
 
 
 conservation_default_aes <- function(mapping) {
-  default_mapping = ggplot2::aes(alpha=..conservation.. )
+  default_mapping = ggplot2::aes_string(alpha="stat(conservation)")
   if (is.null(mapping)) {
     mapping = default_mapping
   }
@@ -74,7 +74,6 @@ geom_barcode <- function(mapping = NULL, data = NULL, stat = "conservation",
 
 is.zero <- function(x) is.null(x) || inherits(x, "zeroGrob")
 
-#' @export
 GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                         draw_panel = function(self,data, panel_scales, coord,height=10) {
                           data = unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')])
@@ -106,7 +105,6 @@ stat_conservation <- function(mapping = NULL, data = NULL, geom = "barcode",
   )
 }
 
-#' @export
 StatConservation <- ggplot2::ggproto("StatConservation", ggplot2::Stat,
                         default_aes = ggplot2::aes(),
                         setup_data = function(data,params) {

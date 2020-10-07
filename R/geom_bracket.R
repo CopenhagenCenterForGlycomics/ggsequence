@@ -134,7 +134,6 @@ draw_bracket = function(x,xend,y,size=1,offset=0) {
 
 .pt <- 72.27 / 25.4
 
-#' @export
 GeomBracket <- ggplot2::ggproto("GeomBracket", ggplot2::Geom,
                         required_aes=c('x','xend'),
                         draw_panel = function(data, panel_scales, coord,size=1,offset=0) {

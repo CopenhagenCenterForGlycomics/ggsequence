@@ -15,7 +15,7 @@ plot_sequence <- function(...) {
 	aas.melted = reshape2::melt( merge(aas.frame,seqdata,by='seqname'), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
 	aas.melted$pos = as.numeric(aas.melted$pos)
 	aas.melted$seqname = factor(aas.melted$seqname,levels=rev(unique(seqnames)))
-	out.plot = 	ggplot2::ggplot(aas.melted,ggplot2::aes(seqname=seqname,x=pos,y=seqname,pos=pos,start=start,end=end,seq.id=seq.id,aa=aa))+
+	out.plot = 	ggplot2::ggplot(aas.melted,ggplot2::aes_string(seqname="seqname",x="pos",y="seqname",pos="pos",start="start",end="end",seq.id="seq.id",aa="aa"))+
 				ggplot2::scale_x_discrete(name="Amino acid position",limit=1:max(aas.melted$pos),breaks=seq(from=0,to=max(aas.melted$pos),by=10))+
 				ggplot2::theme_minimal()+
 				ggplot2::theme(panel.grid=ggplot2::element_blank())

@@ -1,4 +1,7 @@
 #' Stat to re-align columns in a data frame using the alignment information
+#' @inheritParams ggplot2::stat_count
+#' @param annotations Data frame containing annotation data that is passed to the geom
+#' @param columns Names of columns from the annotations data frame that contain site positions that will be aligned
 #' @export
 stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
                           position = "identity",
@@ -20,7 +23,6 @@ stat_aligned_site <- function(mapping = NULL, data = NULL, geom = "point",
   )
 }
 
-#' @export
 StatAlignedSite <- ggplot2::ggproto("StatAlignedSite", ggplot2::Stat,
                         default_aes = ggplot2::aes(y=..y..,yend=..y..),
                         compute_panel = function(self,data,scales,id.column=NULL,annotations=NULL,columns=c()) {
@@ -43,7 +45,7 @@ alignSite <- function(alignment,data,id.column,site.columns) {
 
 compute_sites <- function(alignment.data,sites,id.column,site.columns) {
   alignment =  apply( t(sapply(1:max(alignment.data$y), function(y) { alignment.data[alignment.data$y == y,'aa']})), 1, function(row) paste(row,collapse='') )
-  merged = merge(setNames(alignment.data[,c('start','end','seq.id','y')], c('aln.start','aln.end','seq.id','y')),sites,by.x='seq.id',by.y=id.column)
+  merged = merge(stats::setNames(alignment.data[,c('start','end','seq.id','y')], c('aln.start','aln.end','seq.id','y')),sites,by.x='seq.id',by.y=id.column)
   wanted.rows = Reduce(function(old,col) { old & ( ((merged[[col]] - merged$aln.start) * (merged$aln.end - merged[[col]])) >= 0 ) },site.columns,rep(TRUE,nrow(merged)))
   merged = unique(merged[which(wanted.rows),])
   # merged$seqid.draw = sapply(merged$seqid,function(id) { paste(id,'.')})

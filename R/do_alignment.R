@@ -1,3 +1,4 @@
+#' @importFrom methods as
 do_alignment = function(sequences) {
 	if (is.null(names(sequences))) {
 		names(sequences) = as.character(1:length(sequences))
@@ -8,7 +9,7 @@ do_alignment = function(sequences) {
 		views
 	})
 	names(seqs) = names(sequences)
-	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { as(view,'AAStringSet')}, seqs)) )
+	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqs)) )
 	attributes(aln)$sequences = seqs
 	aln
 }

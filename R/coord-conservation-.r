@@ -1,8 +1,11 @@
 require(grid)
 
+#' Generate barcodes and amino acid indexes for aligned proteins
+#' @param alignment_axis Show the amino acids positions for the individual aligned sequences
+#' @param conservation_axis Show the conservation barcode for the aligned sequences
 #' @export
 coord_conservation <- function(alignment_axis=TRUE,conservation_axis=TRUE) {
-  ggproto(NULL, CoordConservation,
+  ggplot2::ggproto(NULL, CoordConservation,
     limits = list(x = NULL, y = NULL),
     expand = TRUE,
     default = FALSE,
@@ -36,7 +39,7 @@ draw_conservation_grobs <- function(conservation) {
     default.units = "native",
     just = c("left", "top"),
     gp = grid::gpar(
-      fill = alpha("black",0.1+conservation$value*0.9),
+      fill = ggplot2::alpha("black",0.1+conservation$value*0.9),
       col='black',
       lwd = 0.3,
       lineend = "butt"
@@ -70,7 +73,7 @@ get_aa_indexes_from_scale <- function(scale_obj) {
     break_size = breaks[2] - breaks[1]
   }
   indexes_breaks = lapply(indexes, function(seq_idxs) {
-    seq_idxs = setNames(seq_idxs,1:length(seq_idxs))
+    seq_idxs = stats::setNames(seq_idxs,1:length(seq_idxs))
     seq_idxs = seq_idxs[seq_idxs >= limits[1] & seq_idxs <= limits[2]]
     if (length(seq_idxs) < 1) {
       return (data.frame())
@@ -88,9 +91,9 @@ draw_axis_labels <- function(indexes,element) {
     df = indexes[[offset]]
     df = df[df$x >= 0,]
     if (nrow(df) < 1) {
-      return(zeroGrob())
+      return(ggplot2::zeroGrob())
     }
-    rlang::exec(element_grob,element,
+    rlang::exec(ggplot2::element_grob,element,
       df$x,
       TRUE,
       label = df$label,
@@ -98,10 +101,6 @@ draw_axis_labels <- function(indexes,element) {
   })
 }
 
-#' @rdname ggplot2-ggproto
-#' @format NULL
-#' @usage NULL
-#' @export
 CoordConservation <- ggproto("CoordConservation", CoordCartesian,
 
   is_linear = function() TRUE,
@@ -163,13 +162,9 @@ CoordConservation <- ggproto("CoordConservation", CoordCartesian,
   if (!is.null(a)) a else b
 }
 
-"%|W|%" <- function(a, b) {
-  if (!is.waive(a)) a else b
-}
-
 panel_guides_grob <- function(guides, position, theme) {
-  guide <- guide_for_position(guides, position) %||% guide_none()
-  guide_gengrob(guide, theme)
+  guide <- guide_for_position(guides, position) %||% ggplot2::guide_none()
+  ggplot2::guide_gengrob(guide, theme)
 }
 
 guide_for_position <- function(guides, position) {
@@ -181,5 +176,5 @@ guide_for_position <- function(guides, position) {
 
   guides <- guides[has_position]
   guides_order <- vapply(guides, function(guide) as.numeric(guide$order)[1], numeric(1))
-  Reduce(guide_merge, guides[order(guides_order)])
+  Reduce(ggplot2::guide_merge, guides[order(guides_order)])
 }
