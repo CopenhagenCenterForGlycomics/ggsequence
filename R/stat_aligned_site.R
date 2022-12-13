@@ -32,16 +32,30 @@ StatAlignedSite <- ggplot2::ggproto("StatAlignedSite", ggplot2::Stat,
                         }
 )
 
+remove_gaps = function(seq, site.ids) {
+  sapply(site.ids, function(site) {
+    if (substr(seq,site,site) == '-') {
+      return(NA)
+    }
+    site - stringr::str_count(substr(seq,1,site),'-')
+  })
+}
+
+
 #' @export
-alignSite <- function(alignment,data,id.column,site.columns) {
+alignSite <- function(alignment,data,id.column,site.columns,reference.sequence.id=NULL) {
   alignment = as.character(alignment)
   data = data[ data[[id.column]] %in% names(alignment), ]
   rescaled = sapply( site.columns, function(col) {
     apply( data[,c(id.column,col)],1, function(row) {
-      rescale_site(alignment[[ row[1] ]], as.numeric(row[2]) )
+      scaled_sites = rescale_site(alignment[[ row[1] ]], as.numeric(row[2]) )
+      if ( !is.null(reference.sequence.id) ) {
+        scaled_sites = remove_gaps( alignment[[ reference.sequence.id ]], scaled_sites )
+      }
+      scaled_sites
     })
   },simplify=F)
-  cbind(data[,! names(data) %in% site.columns],as.data.frame(rescaled))
+  dplyr::select(data, -names(rescaled)) %>% dplyr::bind_cols(as.data.frame(rescaled))
 }
 
 compute_sites <- function(alignment.data,sites,id.column,site.columns) {
