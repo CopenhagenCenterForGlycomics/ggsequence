@@ -13,3 +13,21 @@ do_alignment = function(sequences) {
 	attributes(aln)$sequences = seqs
 	aln
 }
+
+
+do_alignment.ranges = function(ranges=data.frame(uniprot=c('O00533','P12345'),start=c(1,20),end=c(23,25))) {
+	ranges %>%
+	dplyr::mutate(uniprot = tolower(uniprot)) %>%	
+	merge( Rgator::getUniprotSequences(.$uniprot)) %>%
+	dplyr::mutate(uniprot = toupper(uniprot)) %>%
+			dplyr::group_by(uniprot) %>%
+			dplyr::group_map( ~ {
+				views = Biostrings::Views(.$sequence[1],start=.$start,end=.$end)
+				names(views) = paste(.$uniprot,.$start,.$end,sep='.')
+				views
+			},.keep=T)
+
+	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, domains)) )
+	names(domains) = toupper(unique(domains_def$uniprot))
+	attributes(aln)$sequences = domains
+}

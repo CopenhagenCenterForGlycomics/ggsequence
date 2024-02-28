@@ -77,7 +77,7 @@ is.zero <- function(x) is.null(x) || inherits(x, "zeroGrob")
 #' @export
 GeomBarcode <- ggplot2::ggproto("GeomBarcode", ggplot2::GeomTile,
                         draw_panel = function(self,data, panel_scales, coord,height=10) {
-                          data = unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','size','colour','linetype')])
+                          data = unique(data[,c('xmin','xmax','ymin','ymax','alpha','fill','linewidth','colour','linetype')])
                           data$ymin = min(data$ymin)
                           data$ymax = max(data$ymax)
                           return(self$super()$draw_panel(unique(data), panel_scales, coord))

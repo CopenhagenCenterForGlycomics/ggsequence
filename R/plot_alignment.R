@@ -1,8 +1,8 @@
 #' @importFrom methods is
 plot_alignment <- function(data,mapping=ggplot2::aes(),...) {
   stopifnot('sequences' %in% names(attributes(data)))
-  starts = unlist(as.vector(sapply(attributes(data)$sequences,function(x) BiocGenerics::start(x)[1]  )))
-  ends = unlist(as.vector(sapply(attributes(data)$sequences,function(x) BiocGenerics::end(x)[1] )))
+  starts = unlist(as.vector(sapply(attributes(data)$sequences,function(x) BiocGenerics::start(x)  )))
+  ends = unlist(as.vector(sapply(attributes(data)$sequences,function(x) BiocGenerics::end(x) )))
   seqnames = unlist(as.vector(sapply(names(attributes(data)$sequences),function(seq.id) {
     if ( methods::is( attributes(data)$sequences[[seq.id]], 'XString' )) {
       seq.id
@@ -23,7 +23,7 @@ plot_alignment <- function(data,mapping=ggplot2::aes(),...) {
   aas.frame = as.data.frame(Biostrings::as.matrix(data))
   colnames(aas.frame) <- 1:ncol(aas.frame)
   aas.frame$seqname = rownames(aas.frame)
-  aas.melted = reshape2::melt( merge(aas.frame,seqdata,by='seqname'), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
+  aas.melted = reshape2::melt( cbind(aas.frame,seqdata), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
   aas.melted$pos = as.numeric(aas.melted$pos)
   aas.melted$seqname = factor(aas.melted$seqname,levels=rev(unique(seqnames)))
 

@@ -15,7 +15,8 @@ Imports:
     msa,
     grid,
     ggsugar,
-    plyr
+    plyr,
+    magrittr
 Suggests:
     testthat
 Remotes: github::hirenj/ggsugar

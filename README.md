@@ -4,7 +4,7 @@
 Perform sequence alignment and render the results as a ggplot
 
 ```R
-library(ggplot)
+library(ggplot2)
 library(ggsequence)
 ```
 
@@ -48,19 +48,19 @@ p
 Which won't really give us anything useful apart from labels for the sequences and amino acid position. We can add in the sequence.
 
 ```R
-p + geom_text(aes(label=..aa..))
+p + geom_text(aes(label=after_stat(aa)))
 ```
 
 Or, we could add in the sequence, but colour the sequence based upon the conservation of the amino acid using the `conservation` stat.
 
 ```R
-p + geom_text(aes(label=..aa..,color=..conservation..,),stat="conservation")
+p + geom_text(aes(label=after_stat(aa),color=after_stat(conservation),),stat="conservation")
 ```
 
 Or, if we want a quick ClustalW style rendering of sequence
 
 ```R
-p + geom_text(aes(label=..aa..)) + geom_barcode(overlay=F)
+p + geom_text(aes(label=after_stat(aa))) + coord_conservation()
 ```
 
 Which we could actually put on top of the sequence
@@ -72,7 +72,7 @@ p + geom_barcode()
 Lets say we are only interested in the sequence that is aligned with another sequence - we can use the `gappedSequence` stat to draw segments
 
 ```R
-p + geom_text(aes(label=..aa..)) + geom_segment(aes(x=..seqstart..,xend=..seqend..),stat="gappedSequence",size=2,colour="black",position = position_nudge(y=-0.1))
+p + geom_text(aes(label=after_stat(aa))) + geom_segment(aes(x=after_stat(seqstart),xend=after_stat(seqend)),stat="gappedSequence",linewidth=2,colour="black",position = position_nudge(y=-0.1))
 ```
 
 This is fine, but what if we want to map some data onto our aligned sequences? You can map on a data frame to the alignment using the `alignedSite` stat.
@@ -81,33 +81,33 @@ to match the alignment - in this case `start` and `end` (`columns` parameter).
 
 ```R
 signalpeptide_data=data.frame(seq.ids=c('bar','foo'),start=c(1,1),end=c(3,4))
-p + geom_text(aes(label=..aa..)) + geom_segment(aes(x=..start..,xend=..end..),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=signalpeptide_data,id.column='seq.ids',columns=c('start','end'))
+p + geom_text(aes(label=after_stat(aa))) + geom_segment(aes(x=after_stat(start),xend=after_stat(end)),stat="alignedSite",colour="red",size=4,alpha=0.5,annotations=signalpeptide_data,id.column='seq.ids',columns=c('start','end'))
 ```
 
 Or, you can use some fancy brackets to indicate a region
 ```R
-p + geom_text(aes(label=..aa..)) + geom_bracket(aes(x=..start..,xend=..end..),offset=1,size=0.5,stat="alignedSite",annotations=signalpeptide_data,id.column='seq.ids',columns=c('start','end'))
+p + geom_text(aes(label=after_stat(aa))) + geom_bracket(aes(x=after_stat(start),xend=after_stat(end)),offset=1,size=0.5,stat="alignedSite",annotations=signalpeptide_data,id.column='seq.ids',columns=c('start','end'))
 ```
 
 If you have a data frame with specific annotations to add on, you can use the `alignedSite` stat to map that on to the sequences too
 ```R
 site_data = data.frame(seq.ids=c('bar','foo'),site=c(4,5))
 site_data$site_label = as.character(site_data$site)
-p + geom_text(aes(label=..aa..)) + geom_point(aes(x=..site..),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),color='red')
+p + geom_text(aes(label=after_stat(aa))) + geom_point(aes(x=after_stat(site)),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),color='red')
 ```
 
 Extra columns get automatically made available within the geom, so if you have a column with labels for each row, you can easily access them.
 ```R
-p + geom_text(aes(label=..aa..)) + geom_label(aes(x=..site..,label=..site_label..),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),color='red')
+p + geom_text(aes(label=after_stat(aa))) + geom_label(aes(x=after_stat(site),label=..site_label..),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),color='red')
 ```
 
 Or, if you are being really fancy
 ```R
-p + geom_text(aes(label=..aa..)) + ggsugar::geom_sugar(aes(x=..site..),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),class='gal(b1-3)galnac')
+p + geom_text(aes(label=after_stat(aa))) + ggsugar::geom_sugar(aes(x=after_stat(site)),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),size=10,sugar='gal(b1-3)galnac')
 ```
 
 Or, if you are being *EVEN* fancier
 ```R
 site_data = data.frame(seq.ids=c('bar','foo'),site=c(4,5),sugarseq=c('man','gal(b1-3)galnac'))
-p + geom_text(aes(label=..aa..)) + ggsugar::geom_sugar(aes(x=..site..,class=..sugarseq..),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1))
+p + geom_text(aes(label=after_stat(aa))) + ggsugar::geom_sugar(aes(x=after_stat(site),sugar=after_stat(sugarseq)),stat="alignedSite",annotations=site_data,id.column='seq.ids',columns=c('site'),position=position_nudge(y=0.1),size=5)
 ```

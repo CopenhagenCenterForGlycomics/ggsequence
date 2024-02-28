@@ -59,7 +59,7 @@ alignSite <- function(alignment,data,id.column,site.columns,reference.sequence.i
 }
 
 compute_sites <- function(alignment.data,sites,id.column,site.columns) {
-  alignment =  apply( t(sapply(1:max(alignment.data$y), function(y) { alignment.data[alignment.data$y == y,'aa']})), 1, function(row) paste(row,collapse='') )
+  alignment =  sapply(1:max(alignment.data$y), function(y) { paste( alignment.data[alignment.data$y == y,'aa'] ,collapse='' ) } )
   merged = merge(stats::setNames(alignment.data[,c('start','end','seq.id','y')], c('aln.start','aln.end','seq.id','y')),sites,by.x='seq.id',by.y=id.column)
   wanted.rows = Reduce(function(old,col) { old & ( ((merged[[col]] - merged$aln.start) * (merged$aln.end - merged[[col]])) >= 0 ) },site.columns,rep(TRUE,nrow(merged)))
   merged = unique(merged[which(wanted.rows),])
