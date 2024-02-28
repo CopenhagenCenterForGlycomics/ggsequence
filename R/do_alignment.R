@@ -30,4 +30,5 @@ do_alignment.ranges = function(ranges=data.frame(uniprot=c('O00533','P12345'),st
 	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqranges)) )
 	names(seqranges) = toupper(unique(ranges$uniprot))
 	attributes(aln)$sequences = seqranges
+	aln
 }
