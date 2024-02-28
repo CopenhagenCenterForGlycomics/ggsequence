@@ -22,7 +22,6 @@ plot_alignment <- function(data,mapping=ggplot2::aes(),...) {
   seqdata = data.frame(seq.id=seq.ids,seqname=seqnames,start=starts,end=ends)
   aas.frame = as.data.frame(Biostrings::as.matrix(data))
   colnames(aas.frame) <- 1:ncol(aas.frame)
-  aas.frame$seqname = rownames(aas.frame)
   aas.melted = reshape2::melt( cbind(aas.frame,seqdata), c('seqname','seq.id','start','end'),variable.name='pos',value.name='aa')
   aas.melted$pos = as.numeric(aas.melted$pos)
   aas.melted$seqname = factor(aas.melted$seqname,levels=rev(unique(seqnames)))
