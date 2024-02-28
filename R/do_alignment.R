@@ -16,7 +16,7 @@ do_alignment = function(sequences) {
 
 
 do_alignment.ranges = function(ranges=data.frame(uniprot=c('O00533','P12345'),start=c(1,20),end=c(23,25))) {
-	ranges %>%
+	seqranges = ranges %>%
 	dplyr::mutate(uniprot = tolower(uniprot)) %>%	
 	merge( Rgator::getUniprotSequences(.$uniprot)) %>%
 	dplyr::mutate(uniprot = toupper(uniprot)) %>%
@@ -27,7 +27,7 @@ do_alignment.ranges = function(ranges=data.frame(uniprot=c('O00533','P12345'),st
 				views
 			},.keep=T)
 
-	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, domains)) )
-	names(domains) = toupper(unique(domains_def$uniprot))
-	attributes(aln)$sequences = domains
+	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqranges)) )
+	names(seqranges) = toupper(unique(ranges$uniprot))
+	attributes(aln)$sequences = seqranges
 }
