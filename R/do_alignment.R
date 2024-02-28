@@ -9,7 +9,7 @@ do_alignment = function(sequences) {
 		views
 	})
 	names(seqs) = names(sequences)
-	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqs)) )
+	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqs)),order="input" )
 	attributes(aln)$sequences = seqs
 	aln
 }
@@ -27,7 +27,7 @@ do_alignment.ranges = function(ranges=data.frame(uniprot=c('O00533','P12345'),st
 				views
 			},.keep=T)
 
-	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqranges)) )
+	aln = msa::msaClustalOmega( Reduce(c,Map(function(view) { methods::as(view,'AAStringSet')}, seqranges)),order="input" )
 	names(seqranges) = toupper(unique(ranges$uniprot))
 	attributes(aln)$sequences = seqranges
 	aln
